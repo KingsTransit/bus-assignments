@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Bus Assignments Table</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    table {
+      table-layout: fixed;
+      width: 100%;
+    }
+    th, td {
+      word-wrap: break-word;
+      text-align: center;
+    }
+    th {
+      background-color: #007bff;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="container mt-5">
+    <h2 class="text-center">Admin - Bus Assignments</h2>
+    <table class="table table-bordered table-responsive-sm">
+      <thead>
+        <tr>
+          <th>Bus#</th>
+          <th>Assigned Route</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody id="table-body">
+        <!-- Rows will be populated by JavaScript -->
+      </tbody>
+    </table>
+    <button id="saveButton" class="btn btn-primary">Save</button>
+  </div>
+
+  <script>
+    if (localStorage.getItem('loggedIn') !== 'admin') {
+      window.location.href = 'login.html';
+    }
+
+    const preWrittenSentences1 = [
+     "57-Eldorado",
+     "58-Eldorado",
+     "59-NOVA",
+     "60-Eldorado",
+     "61-Eldorado",
+     "62-NewFlyer",
+     "63-NewFlyer",
+     "64-NewFlyer",
+     "65-Eldorado",
+     "66-Eldorado",
+     "67-Eldorado",
+     "71-NewFlyer",
+     "73-NewFlyer"
+    ];
+
+    const preWrittenSentences2 = [
+     "Wolfville 1",
+     "Wolfville 2",
+     "Greenwood 1",
+     "Greenwood 2",
+     "Bridgetown",
+     "Cornwallis",
+     "Weymouth",
+     "OOS",
+     "SPARE-Core",
+     "SPARE-Bridgetown",
+     "SPARE-Weymouth"
+    ];
+
+     function populateTable() {
+      const tableBody = document.getElementById('table-body');
+      tableBody.innerHTML = '';
+
+      const savedRows = JSON.parse(localStorage.getItem('busAssignments')) || [];
+      
+      for (let i = 0; i < 13; i++) {
+        const tr = document.createElement('tr');
+
+        const td1 = document.createElement('td');
+        const select1 = document.createElement('select');
+        select1.className = 'form-control';
+        preWrittenSentences1.forEach(sentence => {
+          const option = document.createElement('option');
+          option.value = sentence;
+          option.textContent = sentence;
+          select1.appendChild(option);
+        });
+        if (savedRows[i]) {
+          select1.value = savedRows[i][0];
+        }
+        td1.appendChild(select1);
+        tr.appendChild(td1);
+
+        const td2 = document.createElement('td');
+        const select2 = document.createElement('select');
+        select2.className = 'form-control';
+        preWrittenSentences2.forEach(sentence => {
+          const option = document.createElement('option');
+          option.value = sentence;
+          option.textContent = sentence;
+          select2.appendChild(option);
+        });
+        if (savedRows[i]) {
+          select2.value = savedRows[i][1];
+        }
+        td2.appendChild(select2);
+        tr.appendChild(td2);
+
+        const td3 = document.createElement('td');
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'form-control';
+        if (savedRows[i]) {
+          input.value = savedRows[i][2];
+        }
+        td3.appendChild(input);
+        tr.appendChild(td3);
+
+        tableBody.appendChild(tr);
+      }
+    }
+
+    function saveTable() {
+      const rows = [];
+      document.querySelectorAll('#table-body tr').forEach(tr => {
+        const row = [];
+        tr.querySelectorAll('td').forEach((td, index) => {
+          if (index < 2) {
+            row.push(td.querySelector('select').value);
+          } else {
+            row.push(td.querySelector('input').value);
+          }
+        });
+        rows.push(row);
+      });
+      localStorage.setItem('busAssignments', JSON.stringify(rows));
+    }
+
+    function refreshPage() {
+      setTimeout(() => {
+        window.location.reload();
+      }, 300000); // Refresh every 5 minutes (300000 ms)
+    }
+
+    function keepSessionAlive() {
+      setInterval(() => {
+        if (localStorage.getItem('loggedIn') !== 'admin') {
+          window.location.href = 'login.html';
+        }
+      }, 60000); // Check session every minute
+    }
+
+    document.getElementById('saveButton').addEventListener('click', saveTable);
+
+    document.addEventListener('DOMContentLoaded', () => {
+      populateTable();
+      refreshPage();
+      keepSessionAlive();
+    });
+  </script>
+</body>
+</html>

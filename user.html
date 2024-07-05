@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bus Assignments Table</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    table {
+      table-layout: fixed;
+      width: 100%;
+    }
+    th, td {
+      word-wrap: break-word;
+      text-align: center;
+    }
+    th {
+      background-color: #007bff;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="container mt-5">
+    <h2 class="text-center">Bus Assignments</h2>
+    <table class="table table-bordered table-responsive-sm">
+      <thead>
+        <tr>
+          <th>Bus#</th>
+          <th>Assigned Route</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody id="table-body">
+        <!-- Rows will be populated by JavaScript -->
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    if (localStorage.getItem('loggedIn') !== 'user') {
+      window.location.href = 'login.html';
+    }
+
+    function loadTable() {
+      const rows = JSON.parse(localStorage.getItem('busAssignments')) || [];
+      const tableBody = document.getElementById('table-body');
+      tableBody.innerHTML = '';
+
+      rows.forEach(row => {
+        const tr = document.createElement('tr');
+        row.forEach(cell => {
+          const td = document.createElement('td');
+          td.textContent = cell || '';
+          tr.appendChild(td);
+        });
+        tableBody.appendChild(tr);
+      });
+    }
+
+    function refreshPage() {
+      setTimeout(() => {
+        window.location.reload();
+      }, 300000); // Refresh every 5 minutes (300000 ms)
+    }
+
+    function keepSessionAlive() {
+      setInterval(() => {
+        if (localStorage.getItem('loggedIn') !== 'user') {
+          window.location.href = 'login.html';
+        }
+      }, 60000); // Check session every minute
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadTable();
+      refreshPage();
+      keepSessionAlive();
+    });
+  </script>
+</body>
+</html>
