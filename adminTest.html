@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Bus Assignments Table</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    table {
+      table-layout: fixed;
+      width: 100%;
+    }
+    th, td {
+      word-wrap: break-word;
+      text-align: center;
+      font-size: 25px; /* Increase the font size */
+      padding: 0px; /* Reduce padding to reduce row height */
+      line-height: 1; /* Adjust line-height */
+      height: 25px; /* Set a fixed height */
+    }
+    th {
+      background-color: #007bff;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="container mt-5">
+    <h2 class="text-center">Admin - Bus Assignments</h2>
+    <table class="table table-bordered table-responsive-sm">
+      <thead>
+        <tr>
+          <th>Title 1</th>
+          <th>Title 2</th>
+          <th>Title 3</th>
+        </tr>
+      </thead>
+      <tbody id="table-body">
+      </tbody>
+    </table>
+    <button id="saveButton" class="btn btn-primary">Save</button>
+  </div>
+
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-analytics.js";
+    import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-database.js";
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCaouI0BOGsEEGK8RleByMEeLoRsvu2nLw",
+      authDomain: "busassignments-6d239.firebaseapp.com",
+      projectId: "busassignments-6d239",
+      storageBucket: "busassignments-6d239.appspot.com",
+      messagingSenderId: "451720299964",
+      appId: "1:451720299964:web:34637403021a3dc9a5d7b9",
+      measurementId: "G-4J3KXJD2BC"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const db = getDatabase(app);
+
+    const preWrittenSentences1 = [
+      "57-Eldorado",
+      "58-Eldorado",
+      "59-NOVA",
+      "60-Eldorado",
+      "61-Eldorado",
+      "62-NewFlyer",
+      "63-NewFlyer",
+      "64-NewFlyer",
+      "65-Eldorado",
+      "66-Eldorado",
+      "67-Eldorado",
+      "71-NewFlyer",
+      "73-NewFlyer"
+    ];
+
+    const preWrittenSentences2 = [
+      "Wolfville 1",
+      "Wolfville 2",
+      "Greenwood 1",
+      "Greenwood 2",
+      "Bridgetown",
+      "Cornwallis",
+      "Weymouth",
+      "OOS",
+      "SPARE-Core",
+      "SPARE-Bridgetown",
+      "SPARE-Weymouth"
+    ];
+
+    function populateTable() {
+      const tableBody = document.getElementById('table-body');
+      tableBody.innerHTML = '';
+
+      const dbRef = ref(db);
+      get(child(dbRef, 'busAssignments')).then(snapshot => {
+        const savedRows = snapshot.val() || [];
+
+        for (let i = 0; i < 13; i++) { // Updated loop count
+          const tr = document.createElement('tr');
+
+          const td1 = document.createElement('td');
+          const select1 = document.createElement('select');
+          select1.className = 'form-control';
+          preWrittenSentences1.forEach(sentence => {
+            const option = document.createElement('option');
+            option.value = sentence;
+            option.textContent = sentence;
+            select1.appendChild(option);
+          });
+          if (savedRows[i]) {
+            select1.value = savedRows[i][0];
+          }
+          td1.appendChild(select1);
+          tr.appendChild(td1);
+
+          const td2 = document.createElement('td');
+          const select2 = document.createElement('select');
+          select2.className = 'form-control';
+          preWrittenSentences2.forEach(sentence => {
+            const option = document.createElement('option');
+            option.value = sentence;
+            option.textContent = sentence;
+            select2.appendChild(option);
+          });
+          if (savedRows[i]) {
+            select2.value = savedRows[i][1];
+          }
+          td2.appendChild(select2);
+          tr.appendChild(td2);
+
+          const td3 = document.createElement('td');
+          const input = document.createElement('input');
+          input.type = 'text';
+          input.className = 'form-control';
+          if (savedRows[i]) {
+            input.value = savedRows[i][2];
+          }
+          td3.appendChild(input);
+          tr.appendChild(td3);
+
+          tableBody.appendChild(tr);
+        }
+      });
+    }
+
+    function saveTable() {
+      const rows = [];
+      document.querySelectorAll('#table-body tr').forEach(tr => {
+        const row = [];
+        tr.querySelectorAll('td').forEach((td, index) => {
+          if (index < 2) {
+            row.push(td.querySelector('select').value);
+          } else {
+            row.push(td.querySelector('input').value);
+          }
+        });
+        rows.push(row);
+      });
+      set(ref(db, 'busAssignments'), rows);
+    }
+
+    function refreshPage() {
+      window.location.reload();
+    }
+
+    function keepSessionAlive() {
+      // This can be a simple call to the database to keep the connection active
+      set(ref(db, 'keepAlive'), Date.now());
+    }
+
+    document.getElementById('saveButton').addEventListener('click', saveTable);
+    document.addEventListener('DOMContentLoaded', populateTable);
+
+    setInterval(refreshPage, 300000); // Refresh the page every 5 minutes
+    setInterval(keepSessionAlive, 240000); // Keep session alive every 4 minutes
+  </script>
+</body>
+</html>
