@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Bus Assignments Table</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    /* Your existing CSS styles */
+    table {
+      table-layout: fixed;
+      width: 100%;
+    }
+    th, td {
+      word-wrap: break-word;
+      text-align: center;
+      font-size: 25px; /* Increase the font size */
+      padding: 0px; /* Reduce padding to reduce row height */
+      line-height: 1; /* Adjust line-height */
+      height: 25px; /* Set a fixed height */
+    }
+    th {
+      background-color: #007bff;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="container mt-5">
+    <h2 class="text-center">Admin - Bus Assignments</h2>
+    <div id="loginForm" class="d-flex justify-content-center align-items-center flex-column">
+      <h3>Login</h3>
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="email">Email address</label>
+          <input type="email" class="form-control" id="email" aria-describedby="emailHelp" placeholder="Enter email">
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" class="form-control" id="password" placeholder="Password">
+        </div>
+        <button type="button" class="btn btn-primary" onclick="signIn()">Login</button>
+      </form>
+      <div id="loginMessage" class="mt-3"></div>
+    </div>
+
+    <div id="adminContent" style="display: none;">
+      <!-- Your admin content here -->
+      <table class="table table-bordered table-responsive-sm mt-3">
+        <thead>
+          <tr>
+            <th>Title 1</th>
+            <th>Title 2</th>
+            <th>Title 3</th>
+          </tr>
+        </thead>
+        <tbody id="table-body">
+          <!-- Table rows will be populated dynamically -->
+        </tbody>
+      </table>
+      <button id="saveButton" class="btn btn-primary">Save</button>
+      <button id="logoutButton" class="btn btn-danger mt-3" onclick="signOut()">Logout</button>
+    </div>
+  </div>
+
+  <!-- Firebase SDK scripts -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-analytics.js"></script>
+
+  <script>
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_STORAGE_BUCKET",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID",
+      measurementId: "YOUR_MEASUREMENT_ID"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const analytics = firebase.analytics();
+    const auth = firebase.auth();
+    const db = firebase.database();
+
+    function signIn() {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      auth.signInWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+          // Signed in
+          const user = userCredential.user;
+          console.log('User logged in:', user.email);
+          document.getElementById('loginForm').style.display = 'none';
+          document.getElementById('adminContent').style.display = 'block';
+          populateTable();
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          console.error('Login error:', errorMessage);
+          document.getElementById('loginMessage').textContent = errorMessage;
+        });
+    }
+
+    function signOut() {
+      auth.signOut().then(() => {
+        // Sign-out successful.
+        console.log('User signed out');
+        document.getElementById('adminContent').style.display = 'none';
+        document.getElementById('loginForm').style.display = 'block';
+      }).catch((error) => {
+        console.error('Sign out error:', error);
+      });
+    }
+
+    function populateTable() {
+      // Function to populate table data from Firebase database
+      // Implement this based on your specific table structure
+    }
+  </script>
+</body>
+</html>
