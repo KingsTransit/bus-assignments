@@ -25,17 +25,6 @@
   </style>
 </head>
 <body>
-    <!-- Insert this script at the bottom of the HTML, but before you use any Firebase services -->
-  <script type="module">
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js'
-
-    // If you enabled Analytics in your project, add the Firebase SDK for Google Analytics
-    import { getAnalytics } from 'https://www.gstatic.com/firebasejs/10.12.3/firebase-analytics.js'
-
-    // Add Firebase products that you want to use
-    import { getAuth } from 'https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js'
-    import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js'
-  </script>
   <div class="container mt-5">
     <h2 class="text-center">Admin - Bus Assignments</h2>
     <div id="loginForm" class="d-flex justify-content-center align-items-center flex-column">
@@ -70,6 +59,18 @@
       <button id="logoutButton" class="btn btn-danger mt-3" onclick="signOut()">Logout</button>
     </div>
   </div>
+
+  <!-- Insert this script at the bottom of the HTML, but before you use any Firebase services -->
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js'
+
+    // If you enabled Analytics in your project, add the Firebase SDK for Google Analytics
+    import { getAnalytics } from 'https://www.gstatic.com/firebasejs/10.12.3/firebase-analytics.js'
+
+    // Add Firebase products that you want to use
+    import { getAuth } from 'https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js'
+    import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js'
+  </script>
 
   <!-- Firebase SDK scripts -->
   <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js"></script>
