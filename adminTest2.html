@@ -29,7 +29,7 @@
     <h2 class="text-center">Admin - Bus Assignments</h2>
     <div id="loginForm" class="d-flex justify-content-center align-items-center flex-column">
       <h3>Login</h3>
-      <form id="loginForm">
+      <form>
         <div class="form-group">
           <label for="email">Email address</label>
           <input type="email" class="form-control" id="email" aria-describedby="emailHelp" placeholder="Enter email">
@@ -116,7 +116,7 @@
       "SPARE-Weymouth"
     ];
 
-    function signIn() {
+    window.signIn = function signIn() {
       const email = document.getElementById('email').value;
       const password = document.getElementById('password').value;
 
@@ -134,9 +134,9 @@
           console.error('Login error:', errorMessage);
           document.getElementById('loginMessage').textContent = errorMessage;
         });
-    }
+    };
 
-    function signOut() {
+    window.signOut = function signOut() {
       signOut(auth).then(() => {
         console.log('User signed out');
         document.getElementById('adminContent').style.display = 'none';
@@ -144,7 +144,7 @@
       }).catch((error) => {
         console.error('Sign out error:', error);
       });
-    }
+    };
 
     function populateTable() {
       const tableBody = document.getElementById('table-body');
