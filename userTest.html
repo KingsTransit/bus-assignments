@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User - Bus Assignments Table</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    table {
+      table-layout: fixed;
+      width: 100%;
+    }
+    th, td {
+      word-wrap: break-word;
+      text-align: center;
+      font-size: 25px; /* Increase the font size */
+      padding: 0px; /* Reduce padding to reduce row height */
+      line-height: 1; /* Adjust line-height */
+      height: 25px; /* Set a fixed height */
+    }
+    th {
+      background-color: #007bff;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="container mt-5">
+    <h2 class="text-center">User - Bus Assignments</h2>
+    <table class="table table-bordered table-responsive-sm">
+      <thead>
+        <tr>
+          <th>Title 1</th>
+          <th>Title 2</th>
+          <th>Title 3</th>
+        </tr>
+      </thead>
+      <tbody id="table-body">
+      </tbody>
+    </table>
+  </div>
+
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-analytics.js";
+    import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-database.js";
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCaouI0BOGsEEGK8RleByMEeLoRsvu2nLw",
+      authDomain: "busassignments-6d239.firebaseapp.com",
+      projectId: "busassignments-6d239",
+      storageBucket: "busassignments-6d239.appspot.com",
+      messagingSenderId: "451720299964",
+      appId: "1:451720299964:web:34637403021a3dc9a5d7b9",
+      measurementId: "G-4J3KXJD2BC"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const db = getDatabase(app);
+
+    function populateTable() {
+      const tableBody = document.getElementById('table-body');
+      tableBody.innerHTML = '';
+
+      const dbRef = ref(db);
+      get(child(dbRef, 'busAssignments')).then(snapshot => {
+        const savedRows = snapshot.val() || [];
+
+        for (let i = 0; i < 13; i++) { // Updated loop count
+          const tr = document.createElement('tr');
+
+          const td1 = document.createElement('td');
+          td1.textContent = savedRows[i] ? savedRows[i][0] : '';
+          tr.appendChild(td1);
+
+          const td2 = document.createElement('td');
+          td2.textContent = savedRows[i] ? savedRows[i][1] : '';
+          tr.appendChild(td2);
+
+          const td3 = document.createElement('td');
+          td3.textContent = savedRows[i] ? savedRows[i][2] : '';
+          tr.appendChild(td3);
+
+          tableBody.appendChild(tr);
+        }
+      });
+    }
+
+    function refreshPage() {
+      window.location.reload();
+    }
+
+    function keepSessionAlive() {
+      // This can be a simple call to the database to keep the connection active
+      set(ref(db, 'keepAlive'), Date.now());
+    }
+
+    document.addEventListener('DOMContentLoaded', populateTable);
+
+    setInterval(refreshPage, 300000); // Refresh the page every 5 minutes
+    setInterval(keepSessionAlive, 240000); // Keep session alive every 4 minutes
+  </script>
+</body>
+</html>
