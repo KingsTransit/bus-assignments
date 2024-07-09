@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User - Bus Assignments Table</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    table {
+      table-layout: fixed;
+      width: 100%;
+    }
+    th, td {
+      word-wrap: break-word;
+      text-align: center;
+      font-size: 25px;
+      padding: 0px;
+      line-height: 1;
+      height: 25px;
+    }
+    th {
+      background-color: #007bff;
+      color: white;
+    }
+     /* Alternate row colors */
+    tr:nth-child(even) {
+      background-color: #f2f2f2; /* Light grey background for even rows */
+    }
+  </style>
+</head>
+<body>
+  <div class="container mt-5">
+    <h2 class="text-center">User - Bus Assignments</h2>
+
+    <div id="userContent">
+      <table class="table table-bordered table-responsive-sm mt-3">
+        <thead>
+          <tr>
+            <th>Bus#</th>
+            <th>Assigned Route</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody id="table-body">
+          <!-- Table rows will be populated dynamically -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Firebase SDK scripts -->
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+    import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-database.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-analytics.js";
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "YAIzaSyCaouI0BOGsEEGK8RleByMEeLoRsvu2nLw",
+      authDomain: "busassignments-6d239.firebaseapp.com",
+      databaseURL: "https://busassignments-6d239-default-rtdb.firebaseio.com",
+      projectId: "busassignments-6d239",
+      storageBucket: "busassignments-6d239.appspot.com",
+      messagingSenderId: "451720299964",
+      appId: "1:451720299964:web:34637403021a3dc9a5d7b9",
+      measurementId: "G-4J3KXJD2BC"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const db = getDatabase(app);
+
+    // Function to populate the table
+    function populateTable() {
+      const dbRef = ref(db, 'busAssignments');
+      get(dbRef).then((snapshot) => {
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          const tableBody = document.getElementById('table-body');
+          tableBody.innerHTML = '';
+
+          data.forEach((rowData, index) => {
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+              <td>${rowData.col1}</td>
+              <td>${rowData.col2}</td>
+              <td>${rowData.col3}</td>
+            `;
+            tableBody.appendChild(newRow);
+          });
+        } else {
+          console.log('No data available');
+          // Handle case when no data is available
+        }
+      }).catch((error) => {
+        console.error('Error getting data:', error);
+        // Handle errors here
+      });
+    }
+
+    // Call populateTable function when the page loads
+    window.onload = function() {
+      populateTable();
+    };
+  </script>
+</body>
+</html>
