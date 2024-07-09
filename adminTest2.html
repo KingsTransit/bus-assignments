@@ -55,7 +55,7 @@
         <tbody id="table-body">
         </tbody>
       </table>
-      <button id="saveButton" class="btn btn-primary">Save</button>
+      <button id="saveButton" class="btn btn-primary" onclick="saveTable()">Save</button>
       <button id="logoutButton" class="btn btn-danger mt-3" onclick="signOut()">Logout</button>
     </div>
   </div>
@@ -168,6 +168,29 @@
         tableBody.appendChild(newRow);
       }
     }
+
+    window.saveTable = function saveTable() {
+      const tableBody = document.getElementById('table-body');
+      const rows = tableBody.getElementsByTagName('tr');
+      const tableData = [];
+
+      for (let i = 0; i < rows.length; i++) {
+        const cells = rows[i].getElementsByTagName('td');
+        const rowData = {
+          col1: cells[0].querySelector('select').value,
+          col2: cells[1].querySelector('select').value,
+          col3: cells[2].innerText
+        };
+        tableData.push(rowData);
+      }
+
+      const dbRef = ref(db, 'busAssignments');
+      set(dbRef, tableData).then(() => {
+        console.log('Data saved successfully.');
+      }).catch((error) => {
+        console.error('Data save error:', error);
+      });
+    };
   </script>
 </body>
 </html>
