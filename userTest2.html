@@ -105,6 +105,12 @@
       });
     }
 
+       // Function to refresh the table content every 3 minutes
+    function refreshTable() {
+      populateTable();
+      setTimeout(refreshTable, 3 * 60 * 1000); // Refresh every 3 minutes
+    }
+
     // Call populateTable function on page load
     document.addEventListener('DOMContentLoaded', function() {
       populateTable();
