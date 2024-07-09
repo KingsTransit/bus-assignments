@@ -88,7 +88,7 @@
           data.forEach((rowData) => {
             const newRow = document.createElement('tr');
             if (rowData.col2 === 'OOS') {
-              newRow.classList.add('red-row'); // Add red text class if "Assigned Route" is "OOS"
+              newRow.classList.add('red-text'); // Add red text class if "Assigned Route" is "OOS"
             }
             newRow.innerHTML = `
               <td>${rowData.col1}</td>
@@ -109,6 +109,9 @@
     document.addEventListener('DOMContentLoaded', function() {
       populateTable();
     });
+  </script>
+</body>
+</html>
   </script>
 </body>
 </html>
