@@ -147,6 +147,41 @@
     };
 
     function populateTable() {
+      const dbRef = ref(db, 'busAssignments');
+      get(dbRef).then((snapshot) => {
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          const tableBody = document.getElementById('table-body');
+          tableBody.innerHTML = '';
+
+          data.forEach((rowData, index) => {
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+              <td>
+                <select class="form-control">
+                  ${preWrittenSentences1.map(sentence => `<option ${sentence === rowData.col1 ? 'selected' : ''}>${sentence}</option>`).join('')}
+                </select>
+              </td>
+              <td>
+                <select class="form-control">
+                  ${preWrittenSentences2.map(sentence => `<option ${sentence === rowData.col2 ? 'selected' : ''}>${sentence}</option>`).join('')}
+                </select>
+              </td>
+              <td contenteditable="true">${rowData.col3}</td>
+            `;
+            tableBody.appendChild(newRow);
+          });
+        } else {
+          console.log('No data available');
+          createEmptyTable();
+        }
+      }).catch((error) => {
+        console.error('Error getting data:', error);
+        createEmptyTable();
+      });
+    }
+
+    function createEmptyTable() {
       const tableBody = document.getElementById('table-body');
       tableBody.innerHTML = '';
 
