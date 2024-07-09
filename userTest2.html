@@ -22,7 +22,7 @@
       background-color: #007bff;
       color: white;
     }
-     /* Alternate row colors */
+    /* Alternate row colors */
     tr:nth-child(even) {
       background-color: #f2f2f2; /* Light grey background for even rows */
     }
@@ -30,14 +30,26 @@
     .red-text {
       color: red;
     }
+
+    /* Positioning and styling for date and time */
+    #datetime {
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      font-size: 24px; /* Increase text size */
+      font-weight: bold; /* Make text bold */
+    }
   </style>
 </head>
 <body>
   <!-- Logo -->
   <img src="https://kingstransit.github.io/bus-assignments/header-logo-120.png" alt="Company Logo" style="position: absolute; top: 10px; left: 20px; width: 150px; height: auto;">
+
+  <!-- Date and time display -->
+  <div id="datetime"></div>
   
   <div class="container mt-5">
-    <h2 class="text-center">User - Bus Assignments</h2>
+    <h2 class="text-center">Bus Assignments</h2>
 
     <div id="userContent">
       <table class="table table-bordered table-responsive-sm mt-3">
@@ -56,7 +68,7 @@
   </div>
 
   <!-- Firebase SDK scripts -->
-  <script type="module">
+   <script type="module">
     // Import the functions you need from the SDKs you need
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
     import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-database.js";
@@ -79,7 +91,7 @@
     const analytics = getAnalytics(app);
     const db = getDatabase(app);
 
-     function populateTable() {
+    function populateTable() {
       const tableBody = document.getElementById('table-body');
       const dbRef = ref(db, 'busAssignments');
 
@@ -100,6 +112,7 @@
             `;
             tableBody.appendChild(newRow);
           });
+          updateDateTime(); // Update date and time after populating table
         } else {
           console.log('No data available');
         }
@@ -108,10 +121,18 @@
       });
     }
 
-       // Function to refresh the table content every 3 minutes
+    // Function to refresh the table content every 3 minutes
     function refreshTable() {
       populateTable();
       setTimeout(refreshTable, 3 * 60 * 1000); // Refresh every 3 minutes
+    }
+
+    // Function to display last refreshed date and time
+    function updateDateTime() {
+      const now = new Date();
+      const options = { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
+      const formattedDateTime = now.toLocaleString('en-US', options);
+      document.getElementById('datetime').textContent = `Last Refreshed: ${formattedDateTime}`;
     }
 
     // Call populateTable function on page load
@@ -122,4 +143,3 @@
   </script>
 </body>
 </html>
- 
