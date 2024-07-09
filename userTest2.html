@@ -72,17 +72,20 @@
     const analytics = getAnalytics(app);
     const db = getDatabase(app);
 
-    // Function to populate the table
-    function populateTable() {
+     function populateTable() {
+      const tableBody = document.getElementById('table-body');
       const dbRef = ref(db, 'busAssignments');
+
       get(dbRef).then((snapshot) => {
         if (snapshot.exists()) {
           const data = snapshot.val();
-          const tableBody = document.getElementById('table-body');
           tableBody.innerHTML = '';
 
-          data.forEach((rowData, index) => {
+          data.forEach((rowData) => {
             const newRow = document.createElement('tr');
+            if (rowData.col2 === 'OOS') {
+              newRow.classList.add('red-row'); // Add red text class if "Assigned Route" is "OOS"
+            }
             newRow.innerHTML = `
               <td>${rowData.col1}</td>
               <td>${rowData.col2}</td>
@@ -92,18 +95,16 @@
           });
         } else {
           console.log('No data available');
-          // Handle case when no data is available
         }
       }).catch((error) => {
         console.error('Error getting data:', error);
-        // Handle errors here
       });
     }
 
-    // Call populateTable function when the page loads
-    window.onload = function() {
+    // Call populateTable function on page load
+    document.addEventListener('DOMContentLoaded', function() {
       populateTable();
-    };
+    });
   </script>
 </body>
 </html>
