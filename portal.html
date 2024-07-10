@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User - Bus Assignments Table</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+
+    table {
+      table-layout: fixed;
+      width: 100%;
+    }
+    th, td {
+      word-wrap: break-word;
+      text-align: center;
+      font-size: 25px;
+      padding: 0px;
+      line-height: 1;
+      height: 25px;
+    }
+    th {
+      background-color: #007bff;
+      color: white;
+    }
+    /* Alternate row colors */
+    tr:nth-child(even) {
+      background-color: #f2f2f2; /* Light grey background for even rows */
+    }
+    
+    .red-text {
+      color: red;
+    }
+
+    .header-container {
+      display: flex;
+      justify-content: space-evenly;
+      align-items: center;
+      width: 100%;
+    }
+
+    .header-container h2 {
+      margin: 0;
+      font-size: 30px; /* Increase text size */
+      font-weight: bold; /* Make text bold */
+    }
+
+    .header-container #datetime {
+      margin: 0;
+      font-size: 30px; /* Increase text size */
+      font-weight: bold; /* Make text bold */
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <!-- Logo -->
+  <img src="https://kingstransit.github.io/bus-assignments/header-logo-120.png" alt="Company Logo" style="position: absolute; top: 10px; left: 20px; width: 150px; height: auto;">
+
+  <div class="container mt-5">
+    <div class="header-container">
+      <h2 class="text-center">Bus Assignments</h2>
+      <div id="datetime"></div>
+    </div>
+
+    <div id="userContent">
+      <table class="table table-bordered table-responsive-sm mt-3">
+        <thead>
+          <tr>
+            <th>Bus#</th>
+            <th>Assigned Route</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody id="table-body">
+          <!-- Table rows will be populated dynamically -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Firebase SDK scripts -->
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+    import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-database.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-analytics.js";
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCaouI0BOGsEEGK8RleByMEeLoRsvu2nLw",
+      authDomain: "busassignments-6d239.firebaseapp.com",
+      databaseURL: "https://busassignments-6d239-default-rtdb.firebaseio.com",
+      projectId: "busassignments-6d239",
+      storageBucket: "busassignments-6d239.appspot.com",
+      messagingSenderId: "451720299964",
+      appId: "1:451720299964:web:34637403021a3dc9a5d7b9",
+      measurementId: "G-4J3KXJD2BC"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const db = getDatabase(app);
+
+    function populateTable() {
+      const tableBody = document.getElementById('table-body');
+      const dbRef = ref(db, 'busAssignments');
+
+      get(dbRef).then((snapshot) => {
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          tableBody.innerHTML = '';
+
+          data.forEach((rowData) => {
+            const newRow = document.createElement('tr');
+            if (rowData.col2 === 'OOS') {
+              newRow.classList.add('red-text'); // Add red text class if "Assigned Route" is "OOS"
+            }
+            newRow.innerHTML = `
+              <td>${rowData.col1}</td>
+              <td>${rowData.col2}</td>
+              <td>${rowData.col3}</td>
+            `;
+            tableBody.appendChild(newRow);
+          });
+          updateDateTime(); // Update date and time after populating table
+        } else {
+          console.log('No data available');
+        }
+      }).catch((error) => {
+        console.error('Error getting data:', error);
+      });
+    }
+
+    // Function to refresh the table content every 3 minutes
+    function refreshTable() {
+      populateTable();
+      setTimeout(refreshTable, 3 * 60 * 1000); // Refresh every 3 minutes
+    }
+
+    // Function to display last refreshed date and time
+    function updateDateTime() {
+      const now = new Date();
+      const options = { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
+      const formattedDateTime = now.toLocaleString('en-US', options);
+      document.getElementById('datetime').textContent = `Last Refreshed: ${formattedDateTime}`;
+    }
+
+    // Call populateTable function on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      populateTable();
+      refreshTable(); // Start refreshing the table
+    });
+  </script>
+</body>
+</html>
