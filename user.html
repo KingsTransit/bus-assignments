@@ -31,7 +31,7 @@
     }
     /* Alternate row colors */
     tr:nth-child(even) {
-      background-color: #f2f2f2; /* Light grey background for even rows */
+      background-color: #f2f2f2;
     }
     
     .red-text {
@@ -47,20 +47,19 @@
 
     .header-container h2 {
       margin: 0;
-      font-size: 30px; /* Increase text size */
-      font-weight: bold; /* Make text bold */
+      font-size: 30px;
+      font-weight: bold;
     }
 
     .header-container #datetime {
       margin: 0;
-      font-size: 30px; /* Increase text size */
-      font-weight: bold; /* Make text bold */
+      font-size: 30px;
+      font-weight: bold;
       text-decoration: underline;
     }
   </style>
 </head>
 <body>
-  <!-- Logo -->
   <img src="https://kingstransit.github.io/bus-assignments/header-logo-120.png" alt="Company Logo" style="position: absolute; top: 10px; left: 20px; width: 150px; height: auto;">
 
   <div class="container mt-5">
@@ -79,20 +78,17 @@
           </tr>
         </thead>
         <tbody id="table-body">
-          <!-- Table rows will be populated dynamically -->
+          <!-- Table rows populated dynamically -->
         </tbody>
       </table>
     </div>
   </div>
 
-  <!-- Firebase SDK scripts -->
   <script type="module">
-    // Import the functions you need from the SDKs you need
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
     import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-database.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-analytics.js";
 
-    // Your web app's Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyCaouI0BOGsEEGK8RleByMEeLoRsvu2nLw",
       authDomain: "busassignments-6d239.firebaseapp.com",
@@ -104,7 +100,6 @@
       measurementId: "G-4J3KXJD2BC"
     };
 
-    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const analytics = getAnalytics(app);
     const db = getDatabase(app);
@@ -119,18 +114,26 @@
           tableBody.innerHTML = '';
 
           data.forEach((rowData) => {
+            // ✅ Only display rows with a bus assigned
+            if (!rowData.col1 || rowData.col1 === "") return;
+
+            // Optional: skip buses that aren’t commissioned yet
+            const futureBuses = ["75-NOVA","76-NOVA","77-NOVA","79-NOVA"];
+            if (futureBuses.includes(rowData.col1)) return;
+
             const newRow = document.createElement('tr');
             if (rowData.col2 === 'OOS') {
-              newRow.classList.add('red-text'); // Add red text class if "Assigned Route" is "OOS"
+              newRow.classList.add('red-text'); // Highlight out-of-service
             }
             newRow.innerHTML = `
               <td>${rowData.col1}</td>
               <td>${rowData.col2}</td>
-              <td>${rowData.col3}</td>
+              <td>${rowData.col3 || ""}</td>
             `;
             tableBody.appendChild(newRow);
           });
-          updateDateTime(); // Update date and time after populating table
+
+          updateDateTime();
         } else {
           console.log('No data available');
         }
@@ -139,13 +142,11 @@
       });
     }
 
-    // Function to refresh the table content every 3 minutes
     function refreshTable() {
       populateTable();
-      setTimeout(refreshTable, 3 * 60 * 1000); // Refresh every 3 minutes
+      setTimeout(refreshTable, 3 * 60 * 1000);
     }
 
-    // Function to display last refreshed date and time
     function updateDateTime() {
       const now = new Date();
       const options = { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
@@ -153,10 +154,9 @@
       document.getElementById('datetime').textContent = `Last Refreshed: ${formattedDateTime}`;
     }
 
-    // Call populateTable function on page load
     document.addEventListener('DOMContentLoaded', function() {
       populateTable();
-      refreshTable(); // Start refreshing the table
+      refreshTable();
     });
   </script>
 </body>
