@@ -82,7 +82,7 @@
     const auth = getAuth(app);
     const db = getDatabase(app);
 
-    // ✅ UPDATED BUS LIST
+    // ✅ BUS LIST (UPDATED)
     const preWrittenSentences1 = [
       "57-Eldorado",
       "59-NOVA",
@@ -147,7 +147,13 @@
         tableBody.innerHTML = '';
 
         for (let i = 0; i < preWrittenSentences1.length; i++) {
-          const rowData = data[i] || { col1: "", col2: "", col3: "" };
+
+          // ✅ THIS IS THE FIX
+          const rowData = data[i] || {
+            col1: preWrittenSentences1[i],
+            col2: "",
+            col3: ""
+          };
 
           const newRow = document.createElement('tr');
           newRow.innerHTML = `
