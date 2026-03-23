@@ -113,38 +113,56 @@
           const data = snapshot.val();
           tableBody.innerHTML = '';
 
-          data.forEach((rowData) => {
-            // ✅ Only display rows with a bus assigned
-            if (!rowData.col1 || rowData.col1 === "") return;
+          // Convert object to array if necessary
+          const entries = Array.isArray(data) ? data : Object.values(data);
+
+          entries.forEach((rowData) => {
+            // ✅ Skip rows with no bus assigned
+            if (!rowData.col1 || rowData.col1.trim() === "") return;
+
+            // ✅ Skip rows with no assigned route
+            if (!rowData.col2 || rowData.col2.trim() === "") return;
 
             // Optional: skip buses that aren’t commissioned yet
             const futureBuses = ["75-NOVA","76-NOVA","77-NOVA","79-NOVA"];
             if (futureBuses.includes(rowData.col1)) return;
 
             const newRow = document.createElement('tr');
+
+            // Highlight out-of-service buses
             if (rowData.col2 === 'OOS') {
-              newRow.classList.add('red-text'); // Highlight out-of-service
+              newRow.classList.add('red-text');
             }
+
             newRow.innerHTML = `
               <td>${rowData.col1}</td>
               <td>${rowData.col2}</td>
               <td>${rowData.col3 || ""}</td>
             `;
+
             tableBody.appendChild(newRow);
           });
 
           updateDateTime();
+
+          // Show message if no rows were added
+          if (!tableBody.hasChildNodes()) {
+            tableBody.innerHTML = '<tr><td colspan="3">No buses assigned</td></tr>';
+          }
+
         } else {
           console.log('No data available');
+          tableBody.innerHTML = '<tr><td colspan="3">No buses assigned</td></tr>';
         }
       }).catch((error) => {
         console.error('Error getting data:', error);
+        tableBody.innerHTML = '<tr><td colspan="3">Error loading data</td></tr>';
       });
     }
 
     function refreshTable() {
       populateTable();
-      setTimeout(refreshTable, 3 * 60 * 1000);
+      setTimeout(refreshTable, 3 * 60 * 1000); // Refresh every 3 minutes
     }
 
     function updateDateTime() {
@@ -159,5 +177,7 @@
       refreshTable();
     });
   </script>
+</body>
+</html>
 </body>
 </html>
