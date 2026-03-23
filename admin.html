@@ -161,7 +161,14 @@
         }
       });
 
-      set(ref(db, 'busAssignments'), data);
+      // Save to Firebase with confirmation prompt
+      set(ref(db, 'busAssignments'), data)
+        .then(() => {
+          alert("Bus assignments have been successfully updated!");
+        })
+        .catch((error) => {
+          alert("Error saving data: " + error.message);
+        });
     };
   </script>
 </body>
